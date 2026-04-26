@@ -1,0 +1,7 @@
+[project]
+name = "learningpackage"
+version = "0.1.0"
+description = "AI large-model integration learning system with Transformer foundations and LLM application tracks"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []

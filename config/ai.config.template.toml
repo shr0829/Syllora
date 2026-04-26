@@ -1,0 +1,30 @@
+[text]
+model_provider = "OpenAI"
+model = "gpt-5.4"
+review_model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+disable_response_storage = true
+network_access = "enabled"
+windows_wsl_setup_acknowledged = true
+model_context_window = 1000000
+model_auto_compact_token_limit = 900000
+
+[text.provider]
+name = "OpenAI"
+base_url = "https://api.asxs.top/v1"
+wire_api = "responses"
+requires_openai_auth = true
+api_key = "YOUR_OPENAI_API_KEY"
+
+[image]
+model_id = "gpt-image-2"
+
+[image.connection]
+_type = "newapi_channel_conn"
+key = "YOUR_IMAGE_API_KEY"
+url = "https://4sapi.com"
+
+[[image.channels]]
+_type = "newapi_channel_conn"
+key = "YOUR_SECONDARY_IMAGE_API_KEY"
+url = "https://xcode.best"
