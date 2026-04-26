@@ -1,1 +1,1 @@
-"""LearningPackage backend package."""
+"""Syllora backend package."""

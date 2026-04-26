@@ -9,7 +9,7 @@ const QUICK_PROMPTS = [
 ];
 
 function formatRole(role) {
-  return role === "assistant" ? "LearningPackage" : "你";
+  return role === "assistant" ? "Syllora" : "你";
 }
 
 function StartPanel({

@@ -1,7 +1,7 @@
 [project]
-name = "learningpackage"
+name = "syllora"
 version = "0.1.0"
-description = "AI large-model integration learning system with Transformer foundations and LLM application tracks"
+description = "AI learning workspace for structured learning paths, staged lessons, and multi-image study assets"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []

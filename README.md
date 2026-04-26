@@ -1,4 +1,6 @@
-# LearningPackage
+# Syllora
+
+![Syllora GitHub Cover](assets/github-cover/syllora-github-cover.png)
 
 [中文](#中文说明) | [English](#english)
 
@@ -8,52 +10,56 @@
 
 ### 项目简介
 
-LearningPackage 是一个面向 **辅助学习 / AI 课程生成** 的 Web 系统原型。
+**Syllora** 是一个面向 AI 时代的辅助学习系统。
 
-用户只需要在首页输入“想学什么”，系统就会围绕该主题自动完成：
+它的核心目标是：
+
+> 让学习变得更简单、更系统，并把进入一个复杂领域的成本压到足够低。
+
+用户只需要输入“想学什么”，Syllora 就会自动完成：
 
 1. 主题分析与研究资料整理
 2. 联网检索与结构化研究文档生成
 3. 阶段化学习路径规划
 4. 每个阶段的详细知识讲解生成
 5. 每个阶段的多图讲解生成
-6. 结果以可稳定解析的 Markdown / JSON / 图片资产形式落盘
+6. 结果以稳定可解析的 Markdown / JSON / 图片资产形式落盘
 
-它适合做成“一个学习主题 = 一个本地知识仓库”的 AI 学习工作台。
+它不是普通聊天工具，也不是传统课程库，而是一个 **AI Learning Workspace / 学习路径生成系统**。
 
 ---
 
 ### 当前版本亮点（v0.1.0）
 
-- **对话式主题输入**：用户从 Web 首页直接输入学习目标
+- **对话式主题输入**：从首页直接输入学习目标
 - **真实 API 接入**：支持真实文本模型与图片模型配置
 - **结构化研究生成**：自动生成研究文档、来源列表、解析结果
 - **阶段式学习路径**：将学习主题拆成多个可浏览阶段
 - **阶段详情生成**：点击阶段即可生成细粒度知识讲解
 - **多图生成**：每个阶段默认生成多张教学图示
-- **并发生成**：
+- **并发生成**
   - 多个阶段可并发生成
-  - 单阶段内部的图片也可并发生成
-- **流式更新**：
-  - 生成过程显式进度展示
-  - 文本按段流式刷新
-  - 首页与阶段页统一进度体验
-- **公式支持**：
+  - 单阶段内部图片也可并发生成
+- **流式更新**
+  - 显式进度展示
+  - 分段流式正文刷新
+  - 首页与阶段页统一生成体验
+- **公式支持**
   - 行内公式：`$...$`
   - 块级公式：`$$...$$`
   - 前端使用 MathJax 渲染
-- **稳定可解析输出**：
+- **SSE 实时刷新**：通过事件流实时更新项目状态与草稿
+- **稳定可解析输出**
   - prompt 收束
   - markdown 解析
   - canonical 结构化落盘
-- **SSE 实时刷新**：前端通过项目事件流实时更新生成状态
 
 ---
 
 ### 项目结构
 
 ```text
-LearningPackage/
+Syllora/
 ├─ apps/
 │  ├─ backend/
 │  │  ├─ learningpackage/
@@ -69,6 +75,8 @@ LearningPackage/
 │     ├─ src/
 │     ├─ package.json
 │     └─ verification/
+├─ assets/
+│  └─ github-cover/
 ├─ config/
 │  ├─ ai.config.template.toml
 │  └─ ai.config.toml        # 本地使用，已被 git ignore
@@ -113,17 +121,17 @@ data/plans/<topic-id>/
 
 - **Backend**: Python 3.13, 标准库 HTTP Server, uv
 - **Frontend**: React 19, Vite
-- **Streaming**: Server-Sent Events (SSE)
+- **Realtime**: Server-Sent Events (SSE)
 - **Math Rendering**: MathJax
-- **LLM**:
+- **LLM**
   - 文本模型：OpenAI-compatible Responses / Chat Completions
-  - 图片模型：gpt-image-2（多渠道回退）
+  - 图片模型：`gpt-image-2`
 
 ---
 
 ### 启动方式
 
-#### 1) 后端
+#### 后端
 
 在 `apps/backend/` 目录执行：
 
@@ -137,7 +145,7 @@ uv run python main.py serve --host 127.0.0.1 --port 8000
 http://127.0.0.1:8000/api/health
 ```
 
-#### 2) 前端
+#### 前端
 
 在 `apps/frontend/` 目录执行：
 
@@ -214,52 +222,39 @@ url = "https://xcode.best"
 
 ### 主要接口
 
-#### 健康与资料库
-
 - `GET /api/health`
 - `GET /api/library`
 - `GET /api/library/{libraryId}`
-
-#### 项目
-
 - `GET /api/projects`
 - `GET /api/projects/{projectId}`
 - `POST /api/projects`
 - `POST /api/projects/{projectId}/messages`
 - `GET /api/projects/{projectId}/events`
-
-#### 生成流程
-
 - `POST /api/projects/{projectId}/research`
 - `POST /api/projects/{projectId}/plan`
 - `POST /api/projects/{projectId}/goals/{goalId}/lesson`
 - `POST /api/projects/{projectId}/lessons/batch`
-
-#### 阶段图示
-
 - `GET /api/projects/{projectId}/goals/{goalId}/image`
 - `GET /api/projects/{projectId}/goals/{goalId}/images/{index}`
 
 ---
 
-### 当前版本的生成流程
+### 生成流程
 
-1. 用户在首页输入学习主题
-2. 系统创建项目并记录对话上下文
-3. 后端调用文本模型生成研究文档
-4. 后端把研究文档整理为阶段化学习计划
-5. 用户可以：
-   - 单独生成某个阶段
-   - 或批量并发生成全部阶段
-6. 每个阶段先流式生成正文，再并发生成多张讲解图
-7. 前端通过 SSE 订阅实时刷新进度、草稿、阶段状态
-8. 最终结果以 Markdown / JSON / 图片文件写入本地主题仓库
+1. 用户输入学习主题
+2. 系统创建项目与上下文
+3. 后端生成研究文档
+4. 后端拆出阶段化学习路径
+5. 用户可单独生成某阶段，或并发生成全部阶段
+6. 每个阶段先流式生成正文，再并发生成多张图示
+7. 前端通过 SSE 实时刷新进度、草稿、阶段状态
+8. 最终结果写入本地主题仓库
 
 ---
 
 ### 输出稳定性设计
 
-为了让前端展示更稳定、后续二次处理更可靠，本项目采用：
+为了让前端展示和后续二次处理更稳定，Syllora 采用：
 
 - prompt 收束
 - markdown 结构约束
@@ -267,11 +262,9 @@ url = "https://xcode.best"
 - canonical 结构重建
 - 文件化落盘
 
-核心原则是：
+核心原则：
 
 > generate → parse → normalize → persist
-
-而不是直接信任模型原始文本。
 
 ---
 
@@ -285,37 +278,36 @@ url = "https://xcode.best"
 
 ### Overview
 
-LearningPackage is a prototype **AI-assisted learning system**.
+**Syllora** is an AI-assisted learning system designed to make learning simpler, more systematic, and much cheaper to start.
 
-A user enters a topic on the web homepage, and the system automatically:
+Users enter a topic, and Syllora automatically:
 
-1. analyzes the learning topic,
+1. analyzes the topic,
 2. gathers and organizes research materials,
-3. creates a staged learning plan,
+3. creates a staged learning path,
 4. generates detailed lesson content for each stage,
 5. generates multiple instructional images per stage,
-6. persists all results as stable, machine-parseable Markdown / JSON / image assets.
+6. persists everything as machine-parseable Markdown / JSON / image assets.
 
-The product idea is:
-
-> one learning topic = one local AI-generated learning repository.
+Syllora is not just a chatbot and not just a content library.
+It is an **AI Learning Workspace** for structured entry into complex topics.
 
 ---
 
 ### Highlights in v0.1.0
 
-- Conversational topic input from the homepage
-- Real text-model and image-model integration
-- Structured research generation with source indexing
-- Staged learning-path planning
-- On-demand lesson generation per stage
-- Multi-image generation per stage
-- Parallel generation across stages
-- Parallel image generation inside each stage
-- Streaming progress and partial content updates
-- Formula support with inline/block math
-- SSE-based real-time UI refresh
-- Stable parseable output via prompt constraints + parsing + normalization
+- conversational topic input
+- real text-model and image-model integration
+- structured research generation
+- staged learning-path planning
+- on-demand lesson generation
+- multi-image stage generation
+- parallel stage generation
+- parallel image generation inside each stage
+- streaming progress and partial-content refresh
+- formula support with MathJax
+- SSE-based real-time UI updates
+- stable parseable output pipeline
 
 ---
 
@@ -323,11 +315,11 @@ The product idea is:
 
 - **Backend**: Python 3.13, standard-library HTTP server, uv
 - **Frontend**: React 19, Vite
-- **Realtime updates**: Server-Sent Events (SSE)
-- **Math rendering**: MathJax
-- **LLM integration**:
+- **Realtime**: Server-Sent Events (SSE)
+- **Math Rendering**: MathJax
+- **LLM**:
   - OpenAI-compatible text gateway
-  - `gpt-image-2` image generation with multi-channel fallback
+  - `gpt-image-2` image generation
 
 ---
 
@@ -372,21 +364,20 @@ npm run build
 
 ### Configuration
 
-The runtime loads configuration in this order:
+Runtime configuration is loaded in this order:
 
 1. `config/ai.config.toml`
 2. environment variables
 3. built-in defaults
 
-Use `config/ai.config.template.toml` as your starting template.
-
-> `config/ai.config.toml` contains real credentials and is intentionally excluded from Git.
+Use `config/ai.config.template.toml` as your starting point.
 
 ---
 
 ### Main API Endpoints
 
 - `GET /api/health`
+- `GET /api/library`
 - `GET /api/projects`
 - `GET /api/projects/{projectId}`
 - `POST /api/projects`
@@ -401,35 +392,16 @@ Use `config/ai.config.template.toml` as your starting template.
 
 ---
 
-### Generation Pipeline
-
-1. The user enters a topic on the homepage.
-2. The system creates a project and conversation context.
-3. The backend generates structured research.
-4. The backend turns research into a staged learning plan.
-5. The user can generate one stage or batch-generate all stages.
-6. Each stage streams lesson text first, then generates multiple diagrams in parallel.
-7. The frontend listens to SSE events and refreshes progress/content live.
-8. Final artifacts are persisted as Markdown, JSON, and image assets.
-
----
-
 ### Stability Strategy
 
-To keep outputs reliably parseable for UI rendering and downstream automation, the system uses:
+To keep outputs reliable for UI rendering and downstream processing, Syllora uses:
 
-- constrained prompts,
-- markdown structure rules,
-- post-generation parsing,
-- canonical normalization,
-- file-based persistence.
+- constrained prompts
+- markdown structure rules
+- post-generation parsing
+- canonical normalization
+- file-based persistence
 
 Core principle:
 
 > generate → parse → normalize → persist
-
----
-
-### Changelog
-
-See: [CHANGELOG.md](./CHANGELOG.md)

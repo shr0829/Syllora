@@ -1,6 +1,6 @@
-# LearningPackage Frontend
+# Syllora Frontend
 
-这是 LearningPackage 的 React 前端，负责承载三个主要区域：
+这是 Syllora 的 React 前端，负责承载三个主要区域：
 
 - 首页对话框：输入想学的主题，与学习系统对话
 - 左侧历史栏：查看并切换历史学习项目

@@ -6,7 +6,7 @@ from learningpackage.server import run_server
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="LearningPackage local backend server")
+    parser = argparse.ArgumentParser(description="Syllora local backend server")
     parser.add_argument("command", nargs="?", default="serve", choices=["serve"])
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)

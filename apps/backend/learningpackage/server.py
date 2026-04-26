@@ -205,7 +205,7 @@ def run_server(host: str = "127.0.0.1", port: int = 8000) -> None:
     handler_class.store = store
 
     server = ThreadingHTTPServer((host, port), handler_class)
-    print(f"LearningPackage API listening on http://{host}:{port}")
+    print(f"Syllora API listening on http://{host}:{port}")
     print(f"LLM configured: {llm.configured} | model: {llm.model} | image model: {llm.image_model}")
     try:
         server.serve_forever()

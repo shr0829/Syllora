@@ -7,7 +7,7 @@
         "relativePath": "content/library/learning_tracks/pytorch_to_transformer/README.md",
         "title": "PyTorch 到手写 Transformer 学习轨",
         "intro": [
-          "这个目录现在是 LearningPackage 的“基础模型实现线”。",
+          "这个目录现在是 Syllora 的“基础模型实现线”。",
           "如果你是从仓库根目录进入，请先看：",
           "下面保留原始学习路线内容，用于集中学习 PyTorch、attention 和手写 Transformer。",
           "这份路线默认你已经有机器学习基础，能理解常见概念，也写过传统 ML 代码。目标不是“看懂 Transformer”，而是最终能够自己从零实现、训练并调试一个可运行的 mini Transformer。"

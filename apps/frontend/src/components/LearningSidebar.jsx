@@ -19,9 +19,9 @@ export default function LearningSidebar({
   return (
     <header className="sidebar app-header">
       <button type="button" className="app-header-brand" onClick={onStartNew} title="返回首页">
-        <span className="brand-mark">LP</span>
+        <span className="brand-mark">SY</span>
         <span className="app-header-copy">
-          <strong>LearningPackage</strong>
+          <strong>Syllora</strong>
           <span>{subtitle}</span>
         </span>
       </button>

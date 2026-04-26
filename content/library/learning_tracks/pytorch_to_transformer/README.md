@@ -1,6 +1,6 @@
 # PyTorch 到手写 Transformer 学习轨
 
-这个目录现在是 LearningPackage 的“基础模型实现线”。
+这个目录现在是 Syllora 的“基础模型实现线”。
 
 如果你是从仓库根目录进入，请先看：
 
