@@ -251,22 +251,50 @@ def load_runtime_config(project_root: Path) -> RuntimeConfig:
 
     text_config = TextRuntimeConfig(
         provider=_as_str(text_table.get("model_provider"))
+        or _read_env("LEARNING_MODEL_PROVIDER", "OPENAI_PROVIDER")
         or _as_str(text_provider_table.get("name"))
         or "OpenAI",
         base_url=text_base_url,
         wire_api=_as_str(text_provider_table.get("wire_api"))
         or _as_str(text_table.get("wire_api"))
+        or _read_env("LEARNING_WIRE_API", "OPENAI_WIRE_API")
         or "chat/completions",
         api_key=text_api_key,
         model=text_model,
-        review_model=_as_str(text_table.get("review_model")) or text_model,
-        reasoning_effort=_as_str(text_table.get("model_reasoning_effort")),
-        disable_response_storage=_as_bool(text_table.get("disable_response_storage")),
-        network_access=_as_str(text_table.get("network_access")) or "disabled",
-        windows_wsl_setup_acknowledged=_as_bool(text_table.get("windows_wsl_setup_acknowledged")),
-        model_context_window=_as_int(text_table.get("model_context_window")),
-        model_auto_compact_token_limit=_as_int(text_table.get("model_auto_compact_token_limit")),
-        requires_openai_auth=_as_bool(text_provider_table.get("requires_openai_auth"), default=True),
+        review_model=_as_str(text_table.get("review_model"))
+        or _read_env("LEARNING_REVIEW_MODEL", "OPENAI_REVIEW_MODEL")
+        or text_model,
+        reasoning_effort=_as_str(text_table.get("model_reasoning_effort"))
+        or _read_env("LEARNING_MODEL_REASONING_EFFORT", "OPENAI_MODEL_REASONING_EFFORT"),
+        disable_response_storage=_as_bool(
+            text_table.get("disable_response_storage"),
+            default=_as_bool(_read_env("LEARNING_DISABLE_RESPONSE_STORAGE", "OPENAI_DISABLE_RESPONSE_STORAGE")),
+        ),
+        network_access=_as_str(text_table.get("network_access"))
+        or _read_env("LEARNING_NETWORK_ACCESS", "OPENAI_NETWORK_ACCESS")
+        or "disabled",
+        windows_wsl_setup_acknowledged=_as_bool(
+            text_table.get("windows_wsl_setup_acknowledged"),
+            default=_as_bool(
+                _read_env(
+                    "LEARNING_WINDOWS_WSL_SETUP_ACKNOWLEDGED",
+                    "OPENAI_WINDOWS_WSL_SETUP_ACKNOWLEDGED",
+                )
+            ),
+        ),
+        model_context_window=_as_int(text_table.get("model_context_window"))
+        or _as_int(_read_env("LEARNING_MODEL_CONTEXT_WINDOW", "OPENAI_MODEL_CONTEXT_WINDOW")),
+        model_auto_compact_token_limit=_as_int(text_table.get("model_auto_compact_token_limit"))
+        or _as_int(
+            _read_env(
+                "LEARNING_MODEL_AUTO_COMPACT_TOKEN_LIMIT",
+                "OPENAI_MODEL_AUTO_COMPACT_TOKEN_LIMIT",
+            )
+        ),
+        requires_openai_auth=_as_bool(
+            text_provider_table.get("requires_openai_auth"),
+            default=_as_bool(_read_env("LEARNING_REQUIRES_OPENAI_AUTH", "OPENAI_REQUIRES_OPENAI_AUTH"), default=True),
+        ),
     )
 
     image_model = _as_str(image_table.get("model_id")) or _read_env("LEARNING_IMAGE_MODEL", "OPENAI_IMAGE_MODEL") or DEFAULT_IMAGE_MODEL

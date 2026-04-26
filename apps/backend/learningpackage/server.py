@@ -6,7 +6,7 @@ import queue
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 from .llm_client import LLMClient
 from .project_store import ProjectStore
@@ -39,6 +39,41 @@ class LearningRequestHandler(BaseHTTPRequestHandler):
         self._send_cors_headers()
         self.end_headers()
         self.wfile.write(body)
+
+    def _serve_frontend(self, request_path: str) -> bool:
+        dist_root = self.store.root / "apps" / "frontend" / "dist"
+        index_path = dist_root / "index.html"
+        if not index_path.exists():
+            return False
+
+        normalized = unquote(request_path or "/")
+        relative = normalized.lstrip("/")
+
+        if not relative:
+            self._send_file(index_path)
+            return True
+
+        candidate = (dist_root / relative).resolve()
+        dist_root_resolved = dist_root.resolve()
+        try:
+            candidate.relative_to(dist_root_resolved)
+        except ValueError:
+            self._send_json({"error": "Invalid path."}, status=HTTPStatus.BAD_REQUEST)
+            return True
+
+        if candidate.is_dir():
+            candidate = candidate / "index.html"
+
+        if candidate.exists() and candidate.is_file():
+            self._send_file(candidate)
+            return True
+
+        if "." in Path(relative).name:
+            self._send_json({"error": "Asset not found."}, status=HTTPStatus.NOT_FOUND)
+            return True
+
+        self._send_file(index_path)
+        return True
 
     def _stream_project_events(self, project_id: str) -> None:
         subscription = self.store.subscribe_project(project_id)
@@ -132,6 +167,9 @@ class LearningRequestHandler(BaseHTTPRequestHandler):
             ):
                 self._send_file(self.store.get_goal_image_path(path_parts[2], path_parts[4], int(path_parts[6])))
                 return
+
+            if self._serve_frontend(parsed.path):
+                return
         except FileNotFoundError as error:
             self._send_json({"error": str(error)}, status=HTTPStatus.NOT_FOUND)
             return
@@ -206,6 +244,8 @@ def run_server(host: str = "127.0.0.1", port: int = 8000) -> None:
 
     server = ThreadingHTTPServer((host, port), handler_class)
     print(f"Syllora API listening on http://{host}:{port}")
+    if (project_root / "apps" / "frontend" / "dist" / "index.html").exists():
+        print(f"Syllora web UI available on http://{host}:{port}")
     print(f"LLM configured: {llm.configured} | model: {llm.model} | image model: {llm.image_model}")
     try:
         server.serve_forever()

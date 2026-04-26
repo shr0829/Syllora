@@ -1,5 +1,15 @@
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").trim();
+
+function buildApiUrl(path) {
+  if (!API_BASE_URL) {
+    return path;
+  }
+
+  return new URL(path, API_BASE_URL).toString();
+}
+
 async function request(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(buildApiUrl(path), {
     headers: {
       "Content-Type": "application/json",
       ...(options.headers ?? {}),
@@ -33,7 +43,7 @@ export function fetchProject(projectId) {
 }
 
 export function subscribeProjectEvents(projectId, handlers = {}) {
-  const source = new EventSource(`/api/projects/${projectId}/events`);
+  const source = new EventSource(buildApiUrl(`/api/projects/${projectId}/events`));
 
   source.onopen = () => {
     handlers.onOpen?.();

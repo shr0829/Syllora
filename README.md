@@ -6,6 +6,13 @@
 
 ---
 
+## Experience Deployment / 体验版部署
+
+- 中文部署说明：[`docs/deployment-experience.md`](docs/deployment-experience.md)
+- Recommended quickest path: **Railway 单服务部署 + Volume 挂载**
+
+---
+
 ## 中文说明
 
 ### 项目简介
