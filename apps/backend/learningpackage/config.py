@@ -224,6 +224,44 @@ def _build_image_channel(
     )
 
 
+def _build_image_channel_from_env(
+    index: int,
+    *,
+    fallback_base_url: str,
+    fallback_api_key: str,
+    fallback_model: str,
+) -> ImageChannelConfig | None:
+    suffix = f"_CHANNEL_{index}"
+    raw_url = _read_env(
+        f"LEARNING_IMAGE{suffix}_BASE_URL",
+        f"OPENAI_IMAGE{suffix}_BASE_URL",
+    )
+    api_key = _read_env(
+        f"LEARNING_IMAGE{suffix}_API_KEY",
+        f"OPENAI_IMAGE{suffix}_API_KEY",
+    )
+    provider_type = _read_env(
+        f"LEARNING_IMAGE{suffix}_TYPE",
+        f"OPENAI_IMAGE{suffix}_TYPE",
+    )
+    model = _read_env(
+        f"LEARNING_IMAGE{suffix}_MODEL_ID",
+        f"OPENAI_IMAGE{suffix}_MODEL_ID",
+    )
+
+    if not any((raw_url, api_key, provider_type, model)):
+        return None
+
+    effective_raw_url = raw_url or fallback_base_url
+    return ImageChannelConfig(
+        provider_type=provider_type or "openai-image",
+        raw_url=effective_raw_url,
+        base_url=_normalize_base_url(effective_raw_url, append_v1_if_missing=bool(effective_raw_url)),
+        api_key=api_key or fallback_api_key,
+        model=model or fallback_model,
+    )
+
+
 def load_runtime_config(project_root: Path) -> RuntimeConfig:
     config_path = project_root / CONFIG_RELATIVE_PATH
     raw = _read_toml(config_path) if config_path.exists() else {}
@@ -334,6 +372,16 @@ def load_runtime_config(project_root: Path) -> RuntimeConfig:
                 fallback_model=image_model,
             )
         )
+
+    for index in range(2, 5):
+        env_channel = _build_image_channel_from_env(
+            index,
+            fallback_base_url=text_base_url,
+            fallback_api_key=text_api_key,
+            fallback_model=image_model,
+        )
+        if env_channel is not None:
+            image_channels.append(env_channel)
 
     image_config = ImageRuntimeConfig(
         model=image_model,
